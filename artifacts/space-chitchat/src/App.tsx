@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Route, Switch, useLocation, useRoute } from 'wouter';
-import { ArrowLeft, ArrowRight, Award, BookOpen, Check, ChevronLeft, Headphones, Home as HomeIcon, Lightbulb, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Award, BookOpen, Check, ChevronLeft, Gamepad2, Headphones, Home as HomeIcon, Lightbulb, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { missions, worldInfo, type Mission, type World } from './data';
+import { SpaceGame } from './SpaceGame';
 
 const STORAGE_KEY = 'space-chitchat-discovered-v1';
 
@@ -185,7 +186,10 @@ function WorldPage({ world, discovered, muted }: { world: World; discovered: str
         })}
         <div className="map-disclaimer">المواضع رسومية لتسهيل الاستكشاف؛ لا تُعرض إحداثيات أو مسافات مختلقة.</div>
       </div>
-      <div className="section-heading"><div><span className="eyebrow">ثلاث علامات على الخريطة</span><h2>اختر حكاية لتبدأ</h2></div></div>
+      <div className="section-heading">
+        <div><span className="eyebrow">ثلاث علامات على الخريطة</span><h2>اختر حكاية لتبدأ</h2></div>
+        <Link href={`/space-break/${world}`} className="game-map-entry"><Gamepad2 size={18}/> استراحة فضائية <ArrowLeft size={16}/></Link>
+      </div>
       <div className="story-list">
         {items.map((mission) => <StoryTile key={mission.id} mission={mission} done={discovered.includes(mission.id)}/>)}
       </div>
@@ -276,8 +280,7 @@ function StoryPage({ mission, discovered, onComplete, muted, setMuted }: { missi
   const markDone = () => {
     stop();
     onComplete(mission.id);
-    if (discovered.length + (done ? 0 : 1) === 6) navigate('/certificate');
-    else navigate(`/explore/${world}`);
+    navigate(`/space-break/${world}/${mission.id}`);
   };
   return (
     <>
@@ -426,11 +429,19 @@ function App() {
   const [location] = useLocation();
   const [, params] = useRoute('/explore/:world/:id');
   const [isWorld, worldParams] = useRoute('/explore/:world');
+  const [, gameMissionParams] = useRoute('/space-break/:world/:missionId');
+  const [, gameWorldParams] = useRoute('/space-break/:world');
   useEffect(() => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(discovered)); } catch { /* Progress remains in memory if storage is unavailable. */ } }, [discovered]);
   useEffect(() => { window.scrollTo({ top:0,behavior:'smooth' }); }, [location]);
   const complete = (id: string) => setDiscovered((old) => old.includes(id) ? old : [...old,id]);
   const mission = params?.id ? missions.find((item) => item.id === params.id) : undefined;
   const validWorld = worldParams?.world === 'moon' || worldParams?.world === 'mars' ? worldParams.world as World : null;
+  const gameWorldValue = gameMissionParams?.world ?? gameWorldParams?.world;
+  const gameWorld = gameWorldValue === 'moon' || gameWorldValue === 'mars' ? gameWorldValue as World : null;
+  const completedMission = gameMissionParams?.missionId
+    ? missions.find((item) => item.id === gameMissionParams.missionId && item.world === gameWorld)
+    : undefined;
+  const gameNextHref = discovered.length === missions.length ? '/certificate' : `/explore/${gameWorld ?? 'moon'}`;
   return (
     <Shell discovered={discovered} muted={muted} setMuted={setMuted}>
       <Switch>
@@ -440,6 +451,16 @@ function App() {
         </Route>
         <Route path="/explore/:world">
           {isWorld && validWorld ? <WorldPage world={validWorld} discovered={discovered} muted={muted}/> : <NotFound/>}
+        </Route>
+        <Route path="/space-break/:world/:missionId">
+          {gameWorld && completedMission
+            ? <SpaceGame world={gameWorld} missionTitle={completedMission.title} nextHref={gameNextHref} onContinue={() => navigate(gameNextHref)}/>
+            : <NotFound/>}
+        </Route>
+        <Route path="/space-break/:world">
+          {gameWorld
+            ? <SpaceGame world={gameWorld} nextHref={gameNextHref} onContinue={() => navigate(gameNextHref)}/>
+            : <NotFound/>}
         </Route>
         <Route path="/certificate"><CertificatePage discovered={discovered}/></Route>
         <Route><NotFound/></Route>
