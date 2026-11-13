@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Space Chitchat"
+description = "An Arabic-first interactive space exploration experience for children, where the Moon and Mars guide young explorers through the real stories of six spacecraft, narrated adventures, saved discovery progress, and a printable explorer certificate."
+version = "1.0.0"
+id = "artifacts/space-chitchat"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19216
+
+[services.development]
+run = "pnpm --filter @workspace/space-chitchat run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/space-chitchat", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/space-chitchat/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19216"
+BASE_PATH = "/"
