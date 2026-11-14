@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rocket Adventure | مغامرة الصاروخ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-icon">🚀</span><div><strong>Rocket Adventure</strong><small>مغامرتك إلى الفضاء</small></div></div>
+      <button class="sound-btn" id="soundBtn" aria-label="تشغيل أو إيقاف الصوت">🔊 الصوت</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">SPACE EXPLORER CLUB</p>
+          <h1>مستعدّ لمغامرة فضائية؟</h1>
+          <p class="subtitle">جهّز صاروخك، انطلق، واجمع النجوم اللامعة! ⭐</p>
+        </div>
+        <div class="hero-planet" aria-hidden="true">🪐</div>
+      </section>
+
+      <section class="setup panel" id="setupPanel">
+        <div class="section-heading"><span class="step">1</span><div><h2>جهّز مغامرتك</h2><p>اختيارات سهلة… ونحن نساعدك بالباقي!</p></div></div>
+        <div class="setup-grid">
+          <div class="choice-group">
+            <h3>اختر عمرك</h3>
+            <div class="age-options" role="group" aria-label="اختر الفئة العمرية">
+              <button class="choice age-choice active" data-age="easy"><span>🧸</span><b>5–7</b><small>مغامرة سهلة</small></button>
+              <button class="choice age-choice" data-age="medium"><span>🧑‍🚀</span><b>8–9</b><small>مغامرة متوسطة</small></button>
+              <button class="choice age-choice" data-age="challenge"><span>🌟</span><b>10–11</b><small>تحدّي الأبطال</small></button>
+            </div>
+          </div>
+          <div class="choice-group">
+            <h3>اختر لون صاروخك</h3>
+            <div class="rocket-options" role="group" aria-label="اختر لون الصاروخ">
+              <button class="color-choice active" data-color="#ff6b6b" style="--rocket-color:#ff6b6b" aria-label="أحمر">🚀</button>
+              <button class="color-choice" data-color="#42c7a5" style="--rocket-color:#42c7a5" aria-label="أخضر">🚀</button>
+              <button class="color-choice" data-color="#6d8cff" style="--rocket-color:#6d8cff" aria-label="أزرق">🚀</button>
+              <button class="color-choice" data-color="#b47cff" style="--rocket-color:#b47cff" aria-label="بنفسجي">🚀</button>
+              <button class="color-choice" data-color="#ffb84d" style="--rocket-color:#ffb84d" aria-label="برتقالي">🚀</button>
+            </div>
+          </div>
+          <div class="choice-group fuel-group">
+            <h3>كمية الوقود</h3>
+            <p class="helper">اختر كمية تساعد صاروخك على الطيران.</p>
+            <div class="fuel-options" role="group" aria-label="اختر كمية الوقود">
+              <button class="choice fuel-choice" data-fuel="low"><span>🪫</span><b>قليل</b></button>
+              <button class="choice fuel-choice active" data-fuel="medium"><span>🔋</span><b>متوسط</b><small>اختيار مناسب</small></button>
+              <button class="choice fuel-choice" data-fuel="high"><span>⛽</span><b>كثير</b></button>
+            </div>
+            <div class="tip" id="fuelTip">رائع! الوقود المتوسط بداية جيدة لمغامرتك.</div>
+          </div>
+        </div>
+        <button class="primary-btn" id="startBtn">جهّز الصاروخ وانطلق <span>🚀</span></button>
+      </section>
+
+      <section class="game-panel panel hidden" id="gamePanel">
+        <div class="game-heading">
+          <div><div class="section-heading compact"><span class="step">2</span><div><h2>رحلتك الفضائية</h2><p id="missionHint">اجمع النجوم وتجنّب الصخور الفضائية!</p></div></div></div>
+          <div class="stats">
+            <div class="stat"><small>النقاط</small><b id="score">0</b> ⭐</div>
+            <div class="stat"><small>النجوم</small><b id="stars">0</b> ✨</div>
+            <div class="stat"><small>الوقود</small><b id="fuelLeft">100%</b> ⛽</div>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="spaceCanvas" width="900" height="480" aria-label="لعبة الصاروخ في الفضاء"></canvas>
+          <div class="game-message" id="gameMessage">استعدّ يا رائد الفضاء!</div>
+        </div>
+        <div class="game-controls">
+          <div class="move-controls">
+            <button class="move-btn" id="leftBtn" aria-label="تحريك لليسار">◀</button>
+            <span>حرّك الصاروخ</span>
+            <button class="move-btn" id="rightBtn" aria-label="تحريك لليمين">▶</button>
+          </div>
+          <div class="action-controls">
+            <button class="secondary-btn" id="pauseBtn">إيقاف مؤقت ⏸</button>
+            <button class="primary-btn small-btn" id="launchBtn" disabled>ابدأ الطيران 🚀</button>
+          </div>
+        </div>
+        <p class="touch-note">يمكنك استخدام الأسهم على الشاشة أو لوحة المفاتيح ← →</p>
+      </section>
+
+      <section class="result-panel panel hidden" id="resultPanel">
+        <div class="trophy">🏆</div>
+        <p class="eyebrow">MISSION COMPLETE</p>
+        <h2 id="resultTitle">أحسنت يا بطل الفضاء!</h2>
+        <p id="resultText">لقد أنهيت مغامرتك بنجاح.</p>
+        <div class="result-score"><span id="finalScore">0</span><small>نقطة</small></div>
+        <div class="reward" id="reward">🌟🌟🌟</div>
+        <button class="primary-btn" id="againBtn">مغامرة جديدة 🔁</button>
+      </section>
+    </main>
+    <footer>صُمّمت لتكون رحلة تعلّم ممتعة وآمنة للصغار 💙</footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
