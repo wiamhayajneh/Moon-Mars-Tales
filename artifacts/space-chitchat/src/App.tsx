@@ -83,7 +83,9 @@ function Shell({ children, discovered, muted, setMuted }: { children: React.Reac
 
       const script = document.createElement('script');
       script.id = 'google-translate-script';
-      script.src = '//://google.com';
+     script.src = 'https://translate.google.com' + '/translate_a/element.js?cb=googleTranslateElementInit';
+
+
       document.body.appendChild(script);
 
       const style = document.createElement('style');
