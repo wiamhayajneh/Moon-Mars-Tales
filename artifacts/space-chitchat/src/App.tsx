@@ -65,6 +65,43 @@ function playPop(muted: boolean) {
 }
 
 function Shell({ children, discovered, muted, setMuted }: { children: React.ReactNode; discovered: string[]; muted: boolean; setMuted: (v: boolean) => void }) {
+    const [lang, setLang] = useState<'ar' | 'en'>('ar');
+
+  useEffect(() => {
+    if (!document.getElementById('google-translate-script')) {
+      const div = document.createElement('div');
+      div.id = 'google_translate_element';
+      div.style.display = 'none';
+      document.body.appendChild(div);
+
+      (window as any).googleTranslateElementInit = () => {
+        new (window as any).google.translate.TranslateElement(
+          { pageLanguage: 'ar', includedLanguages: 'en,ar', autoDisplay: false },
+          'google_translate_element'
+        );
+      };
+
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.src = '//://google.com';
+      document.body.appendChild(script);
+
+      const style = document.createElement('style');
+      style.innerHTML = `.goog-te-banner-frame.skiptranslate, .goog-te-gadget-icon { display: none !important; } body { top: 0px !important; }`;
+      document.head.appendChild(style);
+    }
+  }, []);
+
+  const toggleLanguage = () => {
+    const nextLang = lang === 'ar' ? 'en' : 'ar';
+    setLang(nextLang);
+    const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+    if (select) {
+      select.value = nextLang;
+      select.dispatchEvent(new Event('change'));
+    }
+  };
+
   const [location] = useLocation();
   const moonCount = discovered.filter((id) => missions.find((m) => m.id === id)?.world === 'moon').length;
   const marsCount = discovered.filter((id) => missions.find((m) => m.id === id)?.world === 'mars').length;
@@ -78,6 +115,10 @@ function Shell({ children, discovered, muted, setMuted }: { children: React.Reac
         <div className="nav-actions">
           <Link className="quiet-link" href="/">بوابة العوالم</Link>
           <Link className="quiet-link" href="/certificate">الشهادة</Link>
+                    <button className="button-secondary" onClick={toggleLanguage} title="تغيير اللغة / Switch Language">
+            <span>{lang === 'ar' ? 'English' : 'عربي'}</span>
+          </button>
+
           <button className="button-secondary" aria-label={muted ? 'تشغيل المؤثرات الصوتية' : 'كتم المؤثرات الصوتية'} onClick={() => setMuted(!muted)} title="المؤثرات الصوتية">
             {muted ? <VolumeX size={17}/> : <Volume2 size={17}/>}<span className="no-print">{muted ? 'الصوت مكتوم' : 'الصوت يعمل'}</span>
           </button>
